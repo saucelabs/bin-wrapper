@@ -2,8 +2,9 @@
   "name": "@saucelabs/bin-wrapper",
   "version": "0.0.1",
   "description": "Fetches and runs a binary",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "rimraf ./build && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/saucelabs/bin-wrapper/issues"
   },
-  "homepage": "https://github.com/saucelabs/bin-wrapper#readme"
+  "homepage": "https://github.com/saucelabs/bin-wrapper#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "eslint": "^8.32.0",
+    "rimraf": "^4.1.0",
+    "typescript": "^4.9.4"
+  }
 }
