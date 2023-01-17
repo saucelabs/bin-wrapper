@@ -1,3 +1,2 @@
-class BinWrapper {
-
+export default class BinWrapper {
 }
