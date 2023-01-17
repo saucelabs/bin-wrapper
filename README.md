@@ -1,5 +1,5 @@
 # bin-wrapper
 
-## nstall
+## Install
 
 `npm install --save @saucelabs/bin-wrapper`
