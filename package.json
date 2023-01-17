@@ -1,0 +1,19 @@
+{
+  "name": "@saucelabs/bin-wrapper",
+  "version": "0.0.1",
+  "description": "Fetches and runs a binary",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/saucelabs/bin-wrapper.git"
+  },
+  "author": "DevX <devx@saucelabs.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saucelabs/bin-wrapper/issues"
+  },
+  "homepage": "https://github.com/saucelabs/bin-wrapper#readme"
+}
