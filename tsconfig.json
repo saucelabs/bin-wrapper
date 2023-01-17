@@ -11,5 +11,6 @@
   "compilerOptions": {
     "declaration": true,
     "declarationMap": true
-  }
+  },
+  "outDir": "build"
 }
