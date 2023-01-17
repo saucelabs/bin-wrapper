@@ -13,8 +13,11 @@
     "type": "git",
     "url": "git+ssh://git@github.com/saucelabs/bin-wrapper.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "DevX <devx@saucelabs.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/saucelabs/bin-wrapper/issues"
   },
