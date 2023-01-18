@@ -28,7 +28,7 @@ async function download(url: URL) {
       return res.data;
     })
     .catch((err) => {
-      console.log(`Failed to download: ${err}`);
+      throw new Error(`failed to download: ${err}`);
     });
 }
 
@@ -50,7 +50,7 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
       return await it.unarchive(buf);
     }
   }
-  throw new Error(`unregcognized archive`);
+  throw new Error(`unrecognized archive kind`);
 }
 
 async function save(file: FileEntry, install: string) {
