@@ -1,10 +1,11 @@
 import path from 'path';
 import fs from 'fs/promises';
+import { Stats } from 'fs';
 
 import { downloadAndUnpack } from './download';
 import { run as runB } from './run';
 
-export type OSArchMapping = {
+type OSArchMapping = {
   os: string | undefined;
   arch: string | undefined;
   path: string;
@@ -30,7 +31,7 @@ export class BinWrapper {
     return this;
   }
 
-  async download() {
+  async install() {
     if (await this.binaryPresent()) {
       return;
     }
@@ -39,20 +40,19 @@ export class BinWrapper {
   }
 
   async run(args: string[]): Promise<number> {
-    if (!this.#name) {
-      throw new Error('no binary name defined');
-    }
-    if (!await this.binaryPresent()) {
-      await this.download();
-    }
+    await this.install();
     return await runB(this.#name, args);
   }
 
   async binaryPresent(): Promise<boolean> {
+    let st: Stats;
     try {
-    await fs.stat(this.path());
+      st = await fs.stat(this.path());
     } catch (e: unknown) {
       return false;
+    }
+    if (!st.isFile()) {
+      throw new Error(`${this.path()} exists but is not a file`);
     }
     return true;
   }
@@ -60,7 +60,7 @@ export class BinWrapper {
   findMatchingPlatform(): OSArchMapping {
     const matches = this.#sources.filter(x => x.arch === process.arch && x.os === process.platform);
     if (matches.length == 0) {
-      throw new Error(`No binary found for ${process.platform}_${process.arch}`);
+      throw new Error(`no package found for ${process.platform}_${process.arch}`);
     }
     return matches[0];
   }

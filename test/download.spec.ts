@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import zlib from 'zlib';
 import axios from 'axios';
 import fsPromises from 'fs/promises';
