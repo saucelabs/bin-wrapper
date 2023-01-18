@@ -1,4 +1,3 @@
-import fs from 'fs';
 import fsPromises from 'fs/promises';
 import axios from 'axios';
 import path from 'path';
@@ -15,24 +14,16 @@ type FileEntry = {
   linkname: string | null | undefined;
 };
 
-async function downloadAndUnpack(url: URL, binary: string) {
-  const tempFolder = await fsPromises.mkdtemp('/tmp/binWrapper-');
-  const target = path.join(tempFolder, 'archive')
-  if (tempFolder === '') {
-    return;
-    // FIXME: Raise error
-  }
-
+async function downloadAndUnpack(url: URL, filepath: string, binary: string) {
   const payload = await download(url);
   const files = await extract(payload);
 
-  const found = files.filter(x => x.path == binary);
+  const found = files.filter(x => x.path == filepath);
   if (found.length < 1) {
-    throw new Error(`unable to find ${binary} in ${url.toString()}`);
+    throw new Error(`unable to find ${filepath} in ${url.toString()}`);
   }
 
-  // fsPromises.writeFile(path.join(__dirname, 'file.tar.gz'));
-  // fsPromises.rm(tempFolder, { recursive: true, force: true });
+  return await save(found[0], binary);
 }
 
 async function download(url: URL) {
@@ -70,6 +61,16 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
       .pipe(xtract)
       .on('finish', () => cb(files));
   });
+}
+
+async function save(file: FileEntry, install: string) {
+  const completePath = path.join(__dirname, install);
+  const baseDir = path.dirname(completePath);
+
+  // FIXME: Add try-catch
+  await fsPromises.mkdir(baseDir, { recursive: true });
+  await fsPromises.writeFile(completePath, file.data);
+  await fsPromises.chmod(completePath, 0o755);
 }
 
 async function readAll(stream: Readable): Promise<Buffer> {
