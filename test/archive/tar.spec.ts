@@ -4,7 +4,7 @@ import tarStream from 'tar-stream';
 let tarBuffer: Buffer = Buffer.from('');
 let randomContent: Buffer = Buffer.from('');
 
-describe('gzip', () => {
+describe('tar', () => {
   beforeAll(() => {
     for (let i = 0; i < 20; i++) {
       const str = Math.random().toString(36);
