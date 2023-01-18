@@ -74,7 +74,7 @@ describe('BinWrapper', () => {
     });
 
     bw = new BinWrapper()
-      .src('http://dummy-host/dummy.tar', 'darwin', 'arm64')
+      .src(new URL('http://dummy-host/dummy.tar'), 'darwin', 'arm64')
       .dst(path.join(__dirname, 'bin'))
       .use('dummy');
   });

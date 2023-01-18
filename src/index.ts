@@ -5,10 +5,13 @@ import { Stats } from 'fs';
 import { downloadAndUnpack } from './download';
 import { run as runB } from './run';
 
+type OS = 'aix' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 'sunos' | 'win32';
+type Arch = 'arm' | 'arm64' | 'ia32' | 'mips' | 'mipsel' | 'ppc' | 'ppc64' | 's390' | 's390x' | 'x64';
+
 type OSArchMapping = {
-  os: string | undefined;
-  arch: string | undefined;
-  path: string;
+  path: URL;
+  os: OS;
+  arch: Arch;
 }
 
 export class BinWrapper {
@@ -16,7 +19,7 @@ export class BinWrapper {
   #path: string = path.join(__dirname, 'bin');
   #name = 'bin';
 
-  src(path: string, os: string | undefined, arch: string | undefined): BinWrapper {
+  src(path: URL, os: OS, arch: Arch): BinWrapper {
     this.#sources.push({ os: os, arch: arch, path: path });
     return this;
   }
@@ -32,11 +35,11 @@ export class BinWrapper {
   }
 
   async install() {
-    if (await this.binaryPresent()) {
+    if (await this.#binaryPresent()) {
       return;
     }
-    const downloadUrl = this.findMatchingPlatform();
-    await downloadAndUnpack(new URL(downloadUrl.path), this.#name, path.join(this.#path, this.#name));
+    const downloadUrl = this.#findMatchingPlatform();
+    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name));
   }
 
   async run(args: string[]): Promise<number> {
@@ -44,7 +47,7 @@ export class BinWrapper {
     return await runB(this.#name, args);
   }
 
-  async binaryPresent(): Promise<boolean> {
+  async #binaryPresent(): Promise<boolean> {
     let st: Stats;
     try {
       st = await fs.stat(this.path());
@@ -57,7 +60,7 @@ export class BinWrapper {
     return true;
   }
 
-  findMatchingPlatform(): OSArchMapping {
+  #findMatchingPlatform(): OSArchMapping {
     const matches = this.#sources.filter(x => x.arch === process.arch && x.os === process.platform);
     if (matches.length == 0) {
       throw new Error(`no package found for ${process.platform}_${process.arch}`);
