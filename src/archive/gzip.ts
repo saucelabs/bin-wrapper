@@ -8,10 +8,10 @@ export function isGzip(b: Buffer): boolean {
 }
 
 export async function gunzip(b: Buffer): Promise<Buffer> {
-  return new Promise<Buffer>((resolve) => {
+  return new Promise<Buffer>((resolve, reject) => {
     zlib.gunzip(b, (error, uncompressed) => {
       if (error) {
-        throw new Error('unable to gunzip payload');
+        reject('unable to gunzip payload');
       }
       resolve(uncompressed);
     })
