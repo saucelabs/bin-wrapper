@@ -60,7 +60,7 @@ Arch compatibility of the archive.
 
 Defines where to store the binary.
 
-#### Options
+#### Params
 
 ##### `path`
 
@@ -72,7 +72,7 @@ Target file location.
 
 Defines what file of the archive to use as the binary.
 
-#### Options
+#### Params
 
 ##### `path`
 
@@ -88,7 +88,7 @@ Installs the binary.
 
 Runs the binary with the specified args.
 
-#### Options
+#### Params
 
 ##### `args`
 
