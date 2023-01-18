@@ -1,12 +1,12 @@
 import path from 'path';
 
-type OSArchMapping = {
+export type OSArchMapping = {
   os: string | undefined;
   arch: string | undefined;
   path: string;
 }
 
-class BinWrapper {
+export class BinWrapper {
   #sources: OSArchMapping[] = [];
   #path?: string = path.join(__dirname, 'bin');
   #name?: string = 'bin';

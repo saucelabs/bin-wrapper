@@ -19,7 +19,6 @@ async function downloadAndUnpack(url: URL, filepath: string, binary: string) {
   if (found.length < 1) {
     throw new Error(`unable to find ${filepath} in ${url.toString()}`);
   }
-
   return await save(found[0], binary);
 }
 
@@ -63,6 +62,5 @@ async function save(file: FileEntry, install: string) {
   await fsPromises.writeFile(completePath, file.data);
   await fsPromises.chmod(completePath, 0o755);
 }
-
 
 export { downloadAndUnpack, download, FileEntry };
