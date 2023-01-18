@@ -7,7 +7,7 @@
     "build": "rimraf ./build && tsc",
     "lint": "eslint src/ test/",
     "prepare": "husky install",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
