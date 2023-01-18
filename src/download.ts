@@ -54,13 +54,12 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
 }
 
 async function save(file: FileEntry, install: string) {
-  const completePath = path.join(__dirname, install);
-  const baseDir = path.dirname(completePath);
+  const baseDir = path.dirname(install);
 
   // FIXME: Add try-catch
   await fsPromises.mkdir(baseDir, { recursive: true });
-  await fsPromises.writeFile(completePath, file.data);
-  await fsPromises.chmod(completePath, 0o755);
+  await fsPromises.writeFile(install, file.data);
+  await fsPromises.chmod(install, 0o755);
 }
 
 export { downloadAndUnpack, download, FileEntry };
