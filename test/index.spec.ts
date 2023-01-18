@@ -73,6 +73,9 @@ describe('BinWrapper', () => {
       });
     });
 
+    Object.defineProperty(process, 'platform', { value: 'darwin' });
+    Object.defineProperty(process, 'arch', { value: 'arm64' });
+
     bw = new BinWrapper()
       .src(new URL('http://dummy-host/dummy.tar'), 'darwin', 'arm64')
       .use('dummy');
