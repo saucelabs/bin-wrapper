@@ -1,4 +1,4 @@
-import childProcess from "child_process";
+import childProcess from 'child_process';
 
 export async function run(binary: string, args: string[]): Promise<number> {
   return new Promise<number>((resolve) => {
