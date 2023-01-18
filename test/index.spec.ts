@@ -75,7 +75,6 @@ describe('BinWrapper', () => {
 
     bw = new BinWrapper()
       .src(new URL('http://dummy-host/dummy.tar'), 'darwin', 'arm64')
-      .dst(path.join(__dirname, 'bin'))
       .use('dummy');
   });
 
@@ -112,7 +111,7 @@ describe('BinWrapper', () => {
       await bw.install()
       fail();
     } catch (e: unknown) {
-      expect(e).toEqual(new Error(`${path.join(__dirname, 'bin', 'dummy')} exists but is not a file`));
+      expect(e).toEqual(new Error(`${path.join(__dirname, '..', 'src', 'bin', 'dummy')} exists but is not a file`));
     }
     expect(mockedFsPromises.stat).toHaveBeenCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledTimes(0);

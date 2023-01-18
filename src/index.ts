@@ -24,7 +24,7 @@ export class BinWrapper {
     return this;
   }
 
-  dst(path: string): BinWrapper {
+  dest(path: string): BinWrapper {
     this.#path = path;
     return this;
   }
