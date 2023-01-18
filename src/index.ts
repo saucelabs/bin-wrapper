@@ -27,22 +27,22 @@ export class BinWrapper {
   }
 
   async download() {
-    const downloadUrl = this.#findMatchingPlatform();
+    const downloadUrl = this.findMatchingPlatform();
     // fetch with got
   }
 
   run() {
-    if (!this.#binaryPresent()) {
+    if (!this.binaryPresent()) {
       this.download();
     }
     // FIXME launch binary
   }
 
-  #binaryPresent(): boolean {
+  binaryPresent(): boolean {
     return true;
   }
 
-  #findMatchingPlatform(): OSArchMapping | undefined {
+  findMatchingPlatform(): OSArchMapping | undefined {
     const matches = this.#sources.filter(x => x.arch === process.arch && x.os === process.platform);
     if (matches.length == 0) {
       throw new Error(`No binary found for ${process.platform}_${process.arch}`);
