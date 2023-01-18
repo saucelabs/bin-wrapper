@@ -4,7 +4,7 @@ import { Readable } from 'stream';
 import { FileEntry } from '../download';
 
 export async function unpackTar(buf: Buffer): Promise<FileEntry[]> {
-  return new Promise<FileEntry[]>((cb) => {
+  return new Promise<FileEntry[]>((resolve, reject) => {
 
     const xtract = tarStream.extract();
     const files: FileEntry[] = [];
@@ -19,8 +19,8 @@ export async function unpackTar(buf: Buffer): Promise<FileEntry[]> {
 
     Readable.from(buf)
       .pipe(xtract)
-      .on('finish', () => cb(files))
-      .on('error', () => cb([]));
+      .on('finish', () => resolve(files))
+      .on('error', (error) => reject(error));
   });
 }
 
