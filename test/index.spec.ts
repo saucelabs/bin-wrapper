@@ -62,6 +62,7 @@ describe('BinWrapper', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     spawk.load();
+    spawk.preventUnmatched();
 
     mockedAxios.get.mockImplementation((): Promise<unknown> => {
       return new Promise((resolve) => {
@@ -139,7 +140,7 @@ describe('BinWrapper', () => {
 
   test('bin-wrapper: execute pass', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
-    const interceptor = spawk.spawn('dummy').exit(0).stdout('success');
+    const interceptor = spawk.spawn('/tmp/binary/dummy').exit(0).stdout('success');
 
     const statusCode = await bw.run(['--arg1', '--arg2']);
 
@@ -148,13 +149,13 @@ describe('BinWrapper', () => {
     expect(mockedFsPromises.writeFile).toHaveBeenCalledTimes(0);
     expect(statusCode).toBe(0);
     expect(interceptor.called).toBe(true);
-    expect(interceptor.calledWith.command).toBe('dummy');
+    expect(interceptor.calledWith.command).toBe('/tmp/binary/dummy');
     expect(interceptor.calledWith.args).toEqual(['--arg1', '--arg2']);
   });
 
   test('bin-wrapper: execute fail', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
-    const interceptor = spawk.spawn('dummy').exit(42).stdout('success');
+    const interceptor = spawk.spawn('/tmp/binary/dummy').exit(42).stdout('success');
 
     const statusCode = await bw.run(['--arg1', '--arg2']);
 
@@ -163,7 +164,11 @@ describe('BinWrapper', () => {
     expect(mockedFsPromises.writeFile).toHaveBeenCalledTimes(0);
     expect(statusCode).toBe(42);
     expect(interceptor.called).toBe(true);
-    expect(interceptor.calledWith.command).toBe('dummy');
+    expect(interceptor.calledWith.command).toBe('/tmp/binary/dummy');
     expect(interceptor.calledWith.args).toEqual(['--arg1', '--arg2']);
+  });
+
+  test('bin-wrapper: path is expected', () => {
+    expect(bw.path()).toBe('/tmp/binary/dummy');
   });
 });
