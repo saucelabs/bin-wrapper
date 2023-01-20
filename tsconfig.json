@@ -10,6 +10,7 @@
   ],
   "compilerOptions": {
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "outDir": "dist"
   }
 }
