@@ -44,7 +44,7 @@ export class BinWrapper {
 
   async run(args: string[]): Promise<number> {
     await this.install();
-    return await runB(this.#name, args);
+    return await runB(path.join(this.#path, this.#name), args);
   }
 
   async #binaryPresent(): Promise<boolean> {
