@@ -5,11 +5,14 @@ import tarStream from 'tar-stream';
 import spawk from 'spawk';
 
 import BinWrapper from '../src/index';
+import * as download from '../src/download';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 jest.mock('fs/promises');
 const mockedFsPromises = fsPromises as jest.Mocked<typeof fsPromises>;
+jest.mock('../src/download')
+const mockedDownload = download as jest.Mocked<typeof download>;
 
 const originalOs = process.platform;
 const originalArch = process.arch;
@@ -91,20 +94,17 @@ describe('BinWrapper', () => {
 
   test('bin-wrapper: download if not installed', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatFailure);
+    mockedDownload.downloadAndUnpack.mockResolvedValue();
 
     await bw.install()
-    expect(mockedFsPromises.stat).toHaveBeenCalledTimes(1);
-    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    expect(mockedFsPromises.writeFile).toHaveBeenCalledTimes(1);
+    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(1);
   });
 
   test('bin-wrapper: do not download if installed', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
 
     await bw.install()
-    expect(mockedFsPromises.stat).toHaveBeenCalledTimes(1);
-    expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-    expect(mockedFsPromises.writeFile).toHaveBeenCalledTimes(0);
+    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(0);
   });
 
   test('bin-wrapper: exists but not a file', async () => {
