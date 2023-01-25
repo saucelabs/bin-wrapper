@@ -8,6 +8,10 @@ import { run as runB } from './run';
 type OS = 'aix' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 'sunos' | 'win32';
 type Arch = 'arm' | 'arm64' | 'ia32' | 'mips' | 'mipsel' | 'ppc' | 'ppc64' | 's390' | 's390x' | 'x64';
 
+export type Headers = {
+  [key: string]: string;
+}
+
 type OSArchMapping = {
   path: URL;
   os: OS;
@@ -15,6 +19,7 @@ type OSArchMapping = {
 }
 
 export class BinWrapper {
+  #headers: Headers = {};
   #sources: OSArchMapping[] = [];
   #path: string = path.join(__dirname, 'bin');
   #name = 'bin';
@@ -34,12 +39,17 @@ export class BinWrapper {
     return this;
   }
 
+  httpHeaders(headers: Headers): BinWrapper {
+    this.#headers = headers;
+    return this;
+  }
+
   async install() {
     if (await this.#binaryPresent()) {
       return;
     }
     const downloadUrl = this.#findMatchingPlatform();
-    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name));
+    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name), this.#headers);
   }
 
   async run(args: string[]): Promise<number> {

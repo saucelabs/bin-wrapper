@@ -6,13 +6,15 @@ import gzip from './archive/gzip';
 import zip from './archive/zip';
 import tar from './archive/tar';
 
+import { Headers } from './index';
+
 type FileEntry = {
   data: Buffer;
   path: string;
 };
 
-async function downloadAndUnpack(url: URL, filepath: string, binary: string) {
-  const payload = await download(url);
+async function downloadAndUnpack(url: URL, filepath: string, binary: string, headers: Headers = {}) {
+  const payload = await download(url, headers);
   const files = await extract(payload);
 
   const found = files.filter(x => x.path == filepath);
@@ -22,14 +24,15 @@ async function downloadAndUnpack(url: URL, filepath: string, binary: string) {
   return await save(found[0], binary);
 }
 
-async function download(url: URL) {
-  return await axios.get(url.toString(), { responseType: 'arraybuffer' })
-    .then((res) => {
-      return res.data;
-    })
-    .catch((err) => {
-      throw new Error(`failed to download: ${err}`);
-    });
+async function download(url: URL, headers: Headers) {
+  return await axios.get(url.toString(), {
+    responseType: 'arraybuffer',
+    headers: headers,
+  }).then((res) => {
+    return res.data;
+  }).catch((err) => {
+    throw new Error(`failed to download: ${err}`);
+  });
 }
 
 async function extract(buf: Buffer): Promise<FileEntry[]> {
@@ -41,9 +44,9 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
     detector: ((b: Buffer) => boolean);
     unarchive: ((b: Buffer) => Promise<FileEntry[]>);
   }[] = [
-    { detector: tar.isTar, unarchive: tar.unpackTar},
-    { detector: zip.isZip, unarchive: zip.unpackZip},
-  ];
+      { detector: tar.isTar, unarchive: tar.unpackTar },
+      { detector: zip.isZip, unarchive: zip.unpackZip },
+    ];
 
   for (const it of unarchiveMapping) {
     if (it.detector(buf)) {
