@@ -105,10 +105,10 @@ describe('BinWrapper', () => {
     mockedFsPromises.stat.mockImplementation(fsStatFailure);
     mockedDownload.downloadAndUnpack.mockResolvedValue();
 
-    bw.httpHeaders({ auth: 'Bearer XXX' });
+    bw.httpOptions({ headers: { auth: 'Bearer XXX' } });
     await bw.install()
     expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(1);
-    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledWith(new URL('http://dummy-host/dummy.tar'), 'dummy', '/tmp/binary/dummy', {'auth': "Bearer XXX"});
+    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledWith(new URL('http://dummy-host/dummy.tar'), 'dummy', '/tmp/binary/dummy', { headers: { 'auth': "Bearer XXX" } });
   });
 
   test('bin-wrapper: do not download if installed', async () => {

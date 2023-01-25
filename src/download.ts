@@ -6,15 +6,15 @@ import gzip from './archive/gzip';
 import zip from './archive/zip';
 import tar from './archive/tar';
 
-import { Headers } from './index';
+import { HttpOptions } from './index';
 
 type FileEntry = {
   data: Buffer;
   path: string;
 };
 
-async function downloadAndUnpack(url: URL, filepath: string, binary: string, headers: Headers = {}) {
-  const payload = await download(url, headers);
+async function downloadAndUnpack(url: URL, filepath: string, binary: string, options: HttpOptions = {}) {
+  const payload = await download(url, options);
   const files = await extract(payload);
 
   const found = files.filter(x => x.path == filepath);
@@ -24,10 +24,10 @@ async function downloadAndUnpack(url: URL, filepath: string, binary: string, hea
   return await save(found[0], binary);
 }
 
-async function download(url: URL, headers: Headers) {
+async function download(url: URL, options: HttpOptions) {
   return await axios.get(url.toString(), {
     responseType: 'arraybuffer',
-    headers: headers,
+    headers: options.headers,
   }).then((res) => {
     return res.data;
   }).catch((err) => {

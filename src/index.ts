@@ -12,6 +12,10 @@ export type Headers = {
   [key: string]: string;
 }
 
+export type HttpOptions = {
+  headers?: Headers;
+}
+
 type OSArchMapping = {
   path: URL;
   os: OS;
@@ -19,7 +23,7 @@ type OSArchMapping = {
 }
 
 export class BinWrapper {
-  #headers: Headers = {};
+  #httpOptions: HttpOptions = {};
   #sources: OSArchMapping[] = [];
   #path: string = path.join(__dirname, 'bin');
   #name = 'bin';
@@ -39,8 +43,8 @@ export class BinWrapper {
     return this;
   }
 
-  httpHeaders(headers: Headers): BinWrapper {
-    this.#headers = headers;
+  httpOptions(options: HttpOptions): BinWrapper {
+    this.#httpOptions = options;
     return this;
   }
 
@@ -49,7 +53,7 @@ export class BinWrapper {
       return;
     }
     const downloadUrl = this.#findMatchingPlatform();
-    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name), this.#headers);
+    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name), this.#httpOptions);
   }
 
   async run(args: string[]): Promise<number> {

@@ -149,8 +149,10 @@ test('Headers are carried over', async () => {
     });
   });
   await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt', {
-    'user-agent': 'dummy-UA',
-    auth: 'Bearer XXX'
+    headers: {
+      'user-agent': 'dummy-UA',
+      auth: 'Bearer XXX',
+    },
   });
   expect(usedFilename).toBe('dummy.txt');
   expect(usedBody).toEqual(Buffer.from('dummy-content'));
