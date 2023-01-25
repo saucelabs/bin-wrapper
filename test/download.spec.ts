@@ -122,3 +122,38 @@ describe('downloads', () => {
     }
   });
 });
+
+
+test('Headers are carried over', async () => {
+  mockedAxios.get.mockImplementation((url: string, options: any): Promise<unknown> => {
+    expect(url).toBe('http://dummy-host/archive.tar');
+    expect(options).toEqual({
+      responseType: 'arraybuffer',
+      headers: {
+        auth: 'Bearer XXX',
+        'user-agent': 'dummy-UA',
+      },
+    });
+    return new Promise((resolve) => {
+      resolve({ data: tarBuffer });
+    });
+  });
+  let usedFilename = '';
+  let usedBody = Buffer.from('');
+
+  mockedFsPromises.writeFile.mockImplementation((file: string | any, content: ArrayBuffer | any) => {
+    return new Promise((resolve) => {
+      usedFilename = file;
+      usedBody = content;
+      resolve();
+    });
+  });
+  await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt', {
+    headers: {
+      'user-agent': 'dummy-UA',
+      auth: 'Bearer XXX',
+    },
+  });
+  expect(usedFilename).toBe('dummy.txt');
+  expect(usedBody).toEqual(Buffer.from('dummy-content'));
+});
