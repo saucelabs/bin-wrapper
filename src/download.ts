@@ -28,6 +28,7 @@ async function download(url: URL, options: HttpOptions) {
   return await axios.get(url.toString(), {
     responseType: 'arraybuffer',
     headers: options.headers,
+    httpsAgent: options.httpsAgent,
   }).then((res) => {
     return res.data;
   }).catch((err) => {

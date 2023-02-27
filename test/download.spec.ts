@@ -4,7 +4,7 @@ import axios from 'axios';
 import fsPromises from 'fs/promises';
 import tarStream from 'tar-stream';
 
-import { downloadAndUnpack } from '../src/download';
+import { downloadAndUnpack, download } from '../src/download';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
