@@ -3,8 +3,9 @@ import zlib from 'zlib';
 import axios from 'axios';
 import fsPromises from 'fs/promises';
 import tarStream from 'tar-stream';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
-import { downloadAndUnpack } from '../src/download';
+import { downloadAndUnpack, download } from '../src/download';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -51,7 +52,7 @@ describe('downloads', () => {
         resolve();
       });
     });
-    await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
+    await downloadAndUnpack(new URL('http://dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
     expect(usedFilename).toBe('dummy.txt');
     expect(usedBody).toEqual(Buffer.from('dummy-content'));
   });
@@ -72,7 +73,7 @@ describe('downloads', () => {
         resolve();
       });
     });
-    await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
+    await downloadAndUnpack(new URL('http://dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
     expect(usedFilename).toBe('dummy.txt');
     expect(usedBody).toEqual(Buffer.from('dummy-content'));
   });
@@ -85,7 +86,7 @@ describe('downloads', () => {
     });
 
     try {
-      await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
+      await downloadAndUnpack(new URL('http://dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt');
       fail();
     } catch (e) {
       expect(e).toEqual(new Error('unrecognized archive kind'))
@@ -148,7 +149,7 @@ test('Headers are carried over', async () => {
       resolve();
     });
   });
-  await downloadAndUnpack(new URL('http:/dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt', {
+  await downloadAndUnpack(new URL('http://dummy-host/archive.tar'), 'dummy.txt', 'dummy.txt', {
     headers: {
       'user-agent': 'dummy-UA',
       auth: 'Bearer XXX',
@@ -156,4 +157,48 @@ test('Headers are carried over', async () => {
   });
   expect(usedFilename).toBe('dummy.txt');
   expect(usedBody).toEqual(Buffer.from('dummy-content'));
+});
+
+test('Uses proxyAgent when HTTPS_PROXY is set and targeting HTTPs endpoint', async () => {
+  mockedAxios.get.mockImplementation((url: string, options: any): Promise<unknown> => {
+    expect(options).toEqual({
+      responseType: 'arraybuffer',
+      httpsAgent: new HttpsProxyAgent('http://127.0.0.1:3128'),
+      proxy: false,
+    });
+    return new Promise((resolve) => {
+      resolve({ data: tarBuffer });
+    });
+  });
+
+  // Keep old HTTP proxy value
+  const oldHttpsProxy = process.env.HTTPS_PROXY;
+
+  process.env.HTTPS_PROXY = 'http://127.0.0.1:3128';
+  await download(new URL('https://dummy-host/archive.tar'), {});
+
+
+  // Restore old HTTP proxy value
+  process.env.HTTPS_PROXY = oldHttpsProxy;
+});
+
+test('Do not use proxyAgent when HTTPS_PROXY is set and targeting HTTP endpoint', async () => {
+  mockedAxios.get.mockImplementation((url: string, options: any): Promise<unknown> => {
+    expect(options).toEqual({
+      responseType: 'arraybuffer',
+    });
+    return new Promise((resolve) => {
+      resolve({ data: tarBuffer });
+    });
+  });
+
+  // Keep old HTTP proxy value
+  const oldHttpsProxy = process.env.HTTPS_PROXY;
+
+  process.env.HTTPS_PROXY = 'http://127.0.0.1:3128';
+  await download(new URL('http://dummy-host/archive.tar'), {});
+
+
+  // Restore old HTTP proxy value
+  process.env.HTTPS_PROXY = oldHttpsProxy;
 });
