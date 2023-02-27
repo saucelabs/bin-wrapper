@@ -3,6 +3,7 @@ import zlib from 'zlib';
 import axios from 'axios';
 import fsPromises from 'fs/promises';
 import tarStream from 'tar-stream';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { downloadAndUnpack, download } from '../src/download';
 
@@ -156,4 +157,28 @@ test('Headers are carried over', async () => {
   });
   expect(usedFilename).toBe('dummy.txt');
   expect(usedBody).toEqual(Buffer.from('dummy-content'));
+});
+
+
+test('Uses proxyAgent when HTTPS_PROXY is set', async () => {
+  mockedAxios.get.mockImplementation((url: string, options: any): Promise<unknown> => {
+    expect(options).toEqual({
+      responseType: 'arraybuffer',
+      httpsAgent: new HttpsProxyAgent('http://127.0.0.1:3128'),
+      proxy: false,
+    });
+    return new Promise((resolve) => {
+      resolve({ data: tarBuffer });
+    });
+  });
+
+  // Keep old HTTP proxy value
+  const oldHttpsProxy = process.env.HTTPS_PROXY;
+
+  process.env.HTTPS_PROXY = 'http://127.0.0.1:3128';
+  await download(new URL('http:/dummy-host/archive.tar'), {});
+
+
+  // Restore old HTTP proxy value
+  process.env.HTTPS_PROXY = oldHttpsProxy;
 });
