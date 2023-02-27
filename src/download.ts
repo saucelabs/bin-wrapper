@@ -41,7 +41,6 @@ async function download(url: URL, options: HttpOptions) {
   };
 
   const httpsProxy = getHttpsProxyValue();
-  console.log(url.protocol);
   if (httpsProxy && url.protocol === 'https:') {
     opts.httpsAgent = new HttpsProxyAgent(httpsProxy);
     // Note: proxy needs to be sure that the agent is used.

@@ -2,8 +2,6 @@ import path from 'path';
 import fs from 'fs/promises';
 import { Stats } from 'fs';
 
-import { HttpsProxyAgent } from 'https-proxy-agent';
-
 import { downloadAndUnpack } from './download';
 import { run as runB } from './run';
 
@@ -16,7 +14,6 @@ export type Headers = {
 
 export type HttpOptions = {
   headers?: Headers;
-  httpsAgent?: HttpsProxyAgent;
 }
 
 type OSArchMapping = {
