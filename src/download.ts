@@ -41,7 +41,7 @@ async function download(url: URL, options: HttpOptions) {
   };
 
   const httpsProxy = getHttpsProxyValue();
-  if (httpsProxy && url.protocol === 'https:') {
+  if (httpsProxy &&  url.toString().startsWith('https:')) {
     opts.httpsAgent = new HttpsProxyAgent(httpsProxy);
     // Disable axios' native proxy, because we are letting HttpsProxyAgent handle it.
     opts.proxy = false;
