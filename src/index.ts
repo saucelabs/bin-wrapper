@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { Stats } from 'fs';
 
+import { OutputStreams } from './run';
 import { downloadAndUnpack } from './download';
 import { run as runB } from './run';
 
@@ -56,9 +57,9 @@ export class BinWrapper {
     await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name), this.#httpOptions);
   }
 
-  async run(args: string[]): Promise<number> {
+  async run(args: string[], stdio?: OutputStreams): Promise<number> {
     await this.install();
-    return await runB(path.join(this.#path, this.#name), args);
+    return await runB(path.join(this.#path, this.#name), args, stdio);
   }
 
   async #binaryPresent(): Promise<boolean> {
