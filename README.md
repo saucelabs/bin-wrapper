@@ -1,6 +1,6 @@
 # bin-wrapper
 
-:warning: This package is a non-official and not a supported product.
+:warning: This package is not an official Sauce Labs product and is not supported by Sauce Labs.
 
 ## Install
 
