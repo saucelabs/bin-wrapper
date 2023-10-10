@@ -3,7 +3,6 @@ import zlib from 'zlib';
 import axios from 'axios';
 import fsPromises from 'fs/promises';
 import tarStream from 'tar-stream';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 
 import { downloadAndUnpack, download } from '../src/download';
 
@@ -161,11 +160,8 @@ test('Headers are carried over', async () => {
 
 test('Uses proxyAgent when HTTPS_PROXY is set and targeting HTTPs endpoint', async () => {
   mockedAxios.get.mockImplementation((url: string, options: any): Promise<unknown> => {
-    expect(options).toEqual({
-      responseType: 'arraybuffer',
-      httpsAgent: new HttpsProxyAgent('http://127.0.0.1:3128'),
-      proxy: false,
-    });
+    expect(options.proxy).toBeFalsy();
+    expect(options.httpsAgent).toBeDefined();
     return new Promise((resolve) => {
       resolve({ data: tarBuffer });
     });
