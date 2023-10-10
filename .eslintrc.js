@@ -7,7 +7,6 @@ module.exports = {
   },
   root: true,
   ignorePatterns: [
-    "/tests",
-    "/lib",
+    "/dist",
   ]
 };
