@@ -2,13 +2,13 @@
   "name": "@saucelabs/bin-wrapper",
   "version": "1.0.0",
   "description": "Fetches and runs a binary",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
-    "dist/**"
+    "lib/**"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc",
+    "build": "rimraf ./lib && tsc",
     "lint": "eslint src/ tests/",
     "prepare": "husky install",
     "test": "jest --coverage",
