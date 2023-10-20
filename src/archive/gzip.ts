@@ -4,7 +4,7 @@ export function isGzip(b: Buffer): boolean {
   if (!b || b.byteLength < 3) {
     return false;
   }
-  return b[0] === 0x1F && b[1] === 0x8B && b[2] === 0x08;
+  return b[0] === 0x1f && b[1] === 0x8b && b[2] === 0x08;
 }
 
 export async function gunzip(b: Buffer): Promise<Buffer> {
@@ -14,7 +14,7 @@ export async function gunzip(b: Buffer): Promise<Buffer> {
         reject('unable to gunzip payload');
       }
       resolve(uncompressed);
-    })
+    });
   });
 }
 

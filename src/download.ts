@@ -14,11 +14,16 @@ type FileEntry = {
   path: string;
 };
 
-async function downloadAndUnpack(url: URL, filepath: string, binary: string, options: HttpOptions = {}) {
+async function downloadAndUnpack(
+  url: URL,
+  filepath: string,
+  binary: string,
+  options: HttpOptions = {},
+) {
   const payload = await download(url, options);
   const files = await extract(payload);
 
-  const found = files.filter(x => x.path == filepath);
+  const found = files.filter((x) => x.path == filepath);
   if (found.length < 1) {
     throw new Error(`unable to find ${filepath} in ${url.toString()}`);
   }
@@ -27,7 +32,7 @@ async function downloadAndUnpack(url: URL, filepath: string, binary: string, opt
 
 function getHttpsProxyValue(): string | undefined {
   for (const k of Object.keys(process.env)) {
-    if (k.toUpperCase() === "HTTPS_PROXY") {
+    if (k.toUpperCase() === 'HTTPS_PROXY') {
       return process.env[k];
     }
   }
@@ -41,16 +46,19 @@ async function download(url: URL, options: HttpOptions) {
   };
 
   const httpsProxy = getHttpsProxyValue();
-  if (httpsProxy &&  url.toString().startsWith('https:')) {
+  if (httpsProxy && url.toString().startsWith('https:')) {
     opts.httpsAgent = new HttpsProxyAgent(httpsProxy);
     // Disable axios' native proxy, because we are letting HttpsProxyAgent handle it.
     opts.proxy = false;
   }
-  return await axios.get(url.toString(), opts).then((res) => {
-    return res.data;
-  }).catch((err) => {
-    throw new Error(`failed to download: ${err}`);
-  });
+  return await axios
+    .get(url.toString(), opts)
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      throw new Error(`failed to download: ${err}`);
+    });
 }
 
 async function extract(buf: Buffer): Promise<FileEntry[]> {
@@ -59,12 +67,12 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
   }
 
   const unarchiveMapping: {
-    detector: ((b: Buffer) => boolean);
-    unarchive: ((b: Buffer) => Promise<FileEntry[]>);
+    detector: (b: Buffer) => boolean;
+    unarchive: (b: Buffer) => Promise<FileEntry[]>;
   }[] = [
-      { detector: tar.isTar, unarchive: tar.unpackTar },
-      { detector: zip.isZip, unarchive: zip.unpackZip },
-    ];
+    { detector: tar.isTar, unarchive: tar.unpackTar },
+    { detector: zip.isZip, unarchive: zip.unpackZip },
+  ];
 
   for (const it of unarchiveMapping) {
     if (it.detector(buf)) {

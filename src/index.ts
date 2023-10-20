@@ -6,22 +6,39 @@ import { OutputStreams } from './run';
 import { downloadAndUnpack } from './download';
 import { run as runB } from './run';
 
-type OS = 'aix' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 'sunos' | 'win32';
-type Arch = 'arm' | 'arm64' | 'ia32' | 'mips' | 'mipsel' | 'ppc' | 'ppc64' | 's390' | 's390x' | 'x64';
+type OS =
+  | 'aix'
+  | 'darwin'
+  | 'freebsd'
+  | 'linux'
+  | 'openbsd'
+  | 'sunos'
+  | 'win32';
+type Arch =
+  | 'arm'
+  | 'arm64'
+  | 'ia32'
+  | 'mips'
+  | 'mipsel'
+  | 'ppc'
+  | 'ppc64'
+  | 's390'
+  | 's390x'
+  | 'x64';
 
 export type Headers = {
   [key: string]: string;
-}
+};
 
 export type HttpOptions = {
   headers?: Headers;
-}
+};
 
 type OSArchMapping = {
   path: URL;
   os: OS;
   arch: Arch;
-}
+};
 
 export class BinWrapper {
   #httpOptions: HttpOptions = {};
@@ -54,7 +71,12 @@ export class BinWrapper {
       return;
     }
     const downloadUrl = this.#findMatchingPlatform();
-    await downloadAndUnpack(downloadUrl.path, this.#name, path.join(this.#path, this.#name), this.#httpOptions);
+    await downloadAndUnpack(
+      downloadUrl.path,
+      this.#name,
+      path.join(this.#path, this.#name),
+      this.#httpOptions,
+    );
   }
 
   async run(args: string[], stdio?: OutputStreams): Promise<number> {
@@ -76,9 +98,13 @@ export class BinWrapper {
   }
 
   #findMatchingPlatform(): OSArchMapping {
-    const matches = this.#sources.filter(x => x.arch === process.arch && x.os === process.platform);
+    const matches = this.#sources.filter(
+      (x) => x.arch === process.arch && x.os === process.platform,
+    );
     if (matches.length == 0) {
-      throw new Error(`no package found for ${process.platform}_${process.arch}`);
+      throw new Error(
+        `no package found for ${process.platform}_${process.arch}`,
+      );
     }
     return matches[0];
   }

@@ -5,7 +5,6 @@ import { FileEntry } from '../download';
 
 export async function unpackTar(buf: Buffer): Promise<FileEntry[]> {
   return new Promise<FileEntry[]>((resolve, reject) => {
-
     const xtract = tarStream.extract();
     const files: FileEntry[] = [];
 
@@ -28,7 +27,13 @@ export function isTar(b: Buffer): boolean {
   if (!b || b.byteLength < 262) {
     return false;
   }
-  return b[257] === 0x75 && b[258] === 0x73 && b[259] === 0x74 && b[260] === 0x61 && b[261] === 0x72;
+  return (
+    b[257] === 0x75 &&
+    b[258] === 0x73 &&
+    b[259] === 0x74 &&
+    b[260] === 0x61 &&
+    b[261] === 0x72
+  );
 }
 
 async function readAll(stream: Readable): Promise<Buffer> {
@@ -40,7 +45,7 @@ async function readAll(stream: Readable): Promise<Buffer> {
     });
     stream.on('end', () => {
       callback(Buffer.concat(data));
-    })
+    });
   });
 }
 

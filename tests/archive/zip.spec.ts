@@ -8,7 +8,7 @@ describe('zip', () => {
   beforeAll(async (): Promise<void> => {
     const zip = new AdmZip();
     zip.addFile('dummy.txt', Buffer.from('dummy-content'));
-    zipBuffer = await zip.toBufferPromise()
+    zipBuffer = await zip.toBufferPromise();
   });
 
   test('zip: empty buffer', () => {
@@ -22,19 +22,19 @@ describe('zip', () => {
   test('zip: raw text', () => {
     expect(zip.isZip(Buffer.from('non-zip-content'))).toBe(false);
   });
-  
+
   test('zip: passing magic numbers', () => {
-    expect(zip.isZip(Buffer.from("\x50\x4B\x03\x04"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x03\x06"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x03\x08"))).toBe(true)
+    expect(zip.isZip(Buffer.from('\x50\x4B\x03\x04'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x03\x06'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x03\x08'))).toBe(true);
 
-    expect(zip.isZip(Buffer.from("\x50\x4B\x05\x04"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x05\x06"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x05\x08"))).toBe(true)
+    expect(zip.isZip(Buffer.from('\x50\x4B\x05\x04'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x05\x06'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x05\x08'))).toBe(true);
 
-    expect(zip.isZip(Buffer.from("\x50\x4B\x07\x04"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x07\x06"))).toBe(true)
-    expect(zip.isZip(Buffer.from("\x50\x4B\x07\x08"))).toBe(true)
+    expect(zip.isZip(Buffer.from('\x50\x4B\x07\x04'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x07\x06'))).toBe(true);
+    expect(zip.isZip(Buffer.from('\x50\x4B\x07\x08'))).toBe(true);
   });
 
   test('unpackZip: valid payload', async () => {
@@ -49,7 +49,9 @@ describe('zip', () => {
       await zip.unpackZip(Buffer.from('non-zip-content'));
       fail();
     } catch (e) {
-      expect(e).toStrictEqual(new Error('Invalid or unsupported zip format. No END header found'));
+      expect(e).toStrictEqual(
+        new Error('Invalid or unsupported zip format. No END header found'),
+      );
     }
   });
 });
