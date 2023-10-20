@@ -11,7 +11,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 jest.mock('fs/promises');
 const mockedFsPromises = fsPromises as jest.Mocked<typeof fsPromises>;
-jest.mock('../src/download')
+jest.mock('../src/download');
 const mockedDownload = download as jest.Mocked<typeof download>;
 
 const originalOs = process.platform;
@@ -20,7 +20,6 @@ let tarBuffer: Buffer = Buffer.from('');
 let bw: BinWrapper = new BinWrapper();
 
 jest.setTimeout(15000);
-
 
 const fsStatFailure = (): Promise<Stats> => {
   return new Promise((resolve, reject) => {
@@ -34,7 +33,7 @@ const fsStatSuccess = (): Promise<Stats> => {
     st.isFile = () => true;
     resolve(st);
   });
-}
+};
 
 const fsStatSuccessNotAFile = (): Promise<Stats> => {
   return new Promise((resolve) => {
@@ -42,7 +41,7 @@ const fsStatSuccessNotAFile = (): Promise<Stats> => {
     st.isFile = () => false;
     resolve(st);
   });
-}
+};
 
 describe('BinWrapper', () => {
   beforeAll(async (): Promise<void> => {
@@ -97,7 +96,7 @@ describe('BinWrapper', () => {
     mockedFsPromises.stat.mockImplementation(fsStatFailure);
     mockedDownload.downloadAndUnpack.mockResolvedValue();
 
-    await bw.install()
+    await bw.install();
     expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(1);
   });
 
@@ -106,15 +105,20 @@ describe('BinWrapper', () => {
     mockedDownload.downloadAndUnpack.mockResolvedValue();
 
     bw.httpOptions({ headers: { auth: 'Bearer XXX' } });
-    await bw.install()
+    await bw.install();
     expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(1);
-    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledWith(new URL('http://dummy-host/dummy.tar'), 'dummy', '/tmp/binary/dummy', { headers: { 'auth': "Bearer XXX" } });
+    expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledWith(
+      new URL('http://dummy-host/dummy.tar'),
+      'dummy',
+      '/tmp/binary/dummy',
+      { headers: { auth: 'Bearer XXX' } },
+    );
   });
 
   test('bin-wrapper: do not download if installed', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
 
-    await bw.install()
+    await bw.install();
     expect(mockedDownload.downloadAndUnpack).toHaveBeenCalledTimes(0);
   });
 
@@ -122,10 +126,12 @@ describe('BinWrapper', () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccessNotAFile);
 
     try {
-      await bw.install()
+      await bw.install();
       fail();
     } catch (e: unknown) {
-      expect(e).toEqual(new Error(`/tmp/binary/dummy exists but is not a file`));
+      expect(e).toEqual(
+        new Error(`/tmp/binary/dummy exists but is not a file`),
+      );
     }
     expect(mockedFsPromises.stat).toHaveBeenCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -150,7 +156,10 @@ describe('BinWrapper', () => {
 
   test('bin-wrapper: execute pass', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
-    const interceptor = spawk.spawn('/tmp/binary/dummy').exit(0).stdout('success');
+    const interceptor = spawk
+      .spawn('/tmp/binary/dummy')
+      .exit(0)
+      .stdout('success');
 
     const statusCode = await bw.run(['--arg1', '--arg2']);
 
@@ -165,7 +174,10 @@ describe('BinWrapper', () => {
 
   test('bin-wrapper: execute fail', async () => {
     mockedFsPromises.stat.mockImplementation(fsStatSuccess);
-    const interceptor = spawk.spawn('/tmp/binary/dummy').exit(42).stdout('success');
+    const interceptor = spawk
+      .spawn('/tmp/binary/dummy')
+      .exit(42)
+      .stdout('success');
 
     const statusCode = await bw.run(['--arg1', '--arg2']);
 

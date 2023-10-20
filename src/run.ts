@@ -5,7 +5,11 @@ export interface OutputStreams {
   stderr: NodeJS.WritableStream;
 }
 
-export async function run(binary: string, args: string[], output?: OutputStreams): Promise<number> {
+export async function run(
+  binary: string,
+  args: string[],
+  output?: OutputStreams,
+): Promise<number> {
   return new Promise<number>((resolve) => {
     const child = childProcess.spawn(binary, args);
 
