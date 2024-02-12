@@ -41,50 +41,50 @@ type OSArchMapping = {
 };
 
 export class BinWrapper {
-  #httpOptions: HttpOptions = {};
-  #sources: OSArchMapping[] = [];
-  #path: string = path.join(__dirname, 'bin');
-  #name = 'bin';
+  private options: HttpOptions = {};
+  private sources: OSArchMapping[] = [];
+  private binPath: string = path.join(__dirname, 'bin');
+  private binName = 'bin';
 
   src(path: URL, os: OS, arch: Arch): BinWrapper {
-    this.#sources.push({ os: os, arch: arch, path: path });
+    this.sources.push({ os: os, arch: arch, path: path });
     return this;
   }
 
   dest(path: string): BinWrapper {
-    this.#path = path;
+    this.binPath = path;
     return this;
   }
 
   use(name: string): BinWrapper {
-    this.#name = name;
+    this.binName = name;
     return this;
   }
 
   httpOptions(options: HttpOptions): BinWrapper {
-    this.#httpOptions = options;
+    this.options = options;
     return this;
   }
 
   async install() {
-    if (await this.#binaryPresent()) {
+    if (await this.isBinPresent()) {
       return;
     }
-    const downloadUrl = this.#findMatchingPlatform();
+    const downloadUrl = this.findMatchingPlatform();
     await downloadAndUnpack(
       downloadUrl.path,
-      this.#name,
-      path.join(this.#path, this.#name),
-      this.#httpOptions,
+      this.binName,
+      path.join(this.binPath, this.binName),
+      this.options,
     );
   }
 
   async run(args: string[], stdio?: OutputStreams): Promise<number> {
     await this.install();
-    return await runBinary(path.join(this.#path, this.#name), args, stdio);
+    return await runBinary(path.join(this.binPath, this.binName), args, stdio);
   }
 
-  async #binaryPresent(): Promise<boolean> {
+  private async isBinPresent(): Promise<boolean> {
     let st: Stats;
     try {
       st = await fs.stat(this.path());
@@ -97,8 +97,8 @@ export class BinWrapper {
     return true;
   }
 
-  #findMatchingPlatform(): OSArchMapping {
-    const matches = this.#sources.filter(
+  private findMatchingPlatform(): OSArchMapping {
+    const matches = this.sources.filter(
       (x) => x.arch === process.arch && x.os === process.platform,
     );
     if (matches.length == 0) {
@@ -110,6 +110,6 @@ export class BinWrapper {
   }
 
   path(): string {
-    return path.join(this.#path, this.#name);
+    return path.join(this.binPath, this.binName);
   }
 }
