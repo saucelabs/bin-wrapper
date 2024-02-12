@@ -9,12 +9,12 @@ import tar from './archive/tar';
 import { HttpOptions } from './index';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
-type FileEntry = {
+export type FileEntry = {
   data: Buffer;
   path: string;
 };
 
-async function downloadAndUnpack(
+export async function downloadAndUnpack(
   url: URL,
   filepath: string,
   binary: string,
@@ -39,7 +39,7 @@ function getHttpsProxyValue(): string | undefined {
   return undefined;
 }
 
-async function download(url: URL, options: HttpOptions) {
+export async function download(url: URL, options: HttpOptions) {
   const opts: AxiosRequestConfig = {
     headers: options.headers,
     responseType: 'arraybuffer',
@@ -110,5 +110,3 @@ function sanitizeURL(dirtyURL: URL): string {
 
   return url.toString();
 }
-
-export { downloadAndUnpack, download, FileEntry };

@@ -4,7 +4,7 @@ import { Stats } from 'fs';
 
 import { OutputStreams } from './run';
 import { downloadAndUnpack } from './download';
-import { run as runB } from './run';
+import { run as runBinary } from './run';
 
 type OS =
   | 'aix'
@@ -81,7 +81,7 @@ export class BinWrapper {
 
   async run(args: string[], stdio?: OutputStreams): Promise<number> {
     await this.install();
-    return await runB(path.join(this.#path, this.#name), args, stdio);
+    return await runBinary(path.join(this.#path, this.#name), args, stdio);
   }
 
   async #binaryPresent(): Promise<boolean> {
