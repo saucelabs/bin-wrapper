@@ -57,6 +57,13 @@ async function download(url: URL, options: HttpOptions) {
       return res.data;
     })
     .catch((err) => {
+      if (err.response) {
+        throw new Error(
+          `failed to download from ${sanitizeURL(url)} (${
+            err.response.status
+          }): ${err.response.data}`,
+        );
+      }
       throw new Error(`failed to download: ${err}`);
     });
 }
@@ -89,6 +96,20 @@ async function save(file: FileEntry, install: string) {
   await fsPromises.mkdir(baseDir, { recursive: true });
   await fsPromises.writeFile(install, file.data);
   await fsPromises.chmod(install, 0o755);
+}
+
+/**
+ * Sanitize URL for logging by redacting credentials, if present.
+ */
+function sanitizeURL(dirtyURL: URL): string {
+  const url = structuredClone(dirtyURL);
+
+  if (url.username || url.password) {
+    url.username = '***';
+    url.password = '***';
+  }
+
+  return url.toString();
 }
 
 export { downloadAndUnpack, download, FileEntry };
