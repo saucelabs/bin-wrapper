@@ -101,7 +101,7 @@ async function save(file: FileEntry, install: string) {
  * Sanitize URL for logging by redacting credentials, if present.
  */
 function sanitizeURL(dirtyURL: URL): string {
-  const url = structuredClone(dirtyURL);
+  const url = new URL(dirtyURL.toString());
 
   if (url.username || url.password) {
     url.username = '***';
