@@ -4,7 +4,7 @@ import { Stats } from 'fs';
 import tarStream from 'tar-stream';
 import spawk from 'spawk';
 
-import BinWrapper from '../src/index';
+import { BinWrapper } from '../src';
 import * as download from '../src/download';
 
 jest.mock('axios');
