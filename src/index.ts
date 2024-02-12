@@ -113,5 +113,3 @@ export class BinWrapper {
     return path.join(this.#path, this.#name);
   }
 }
-
-export default BinWrapper;
