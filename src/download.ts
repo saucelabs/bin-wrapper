@@ -25,7 +25,7 @@ async function downloadAndUnpack(
 
   const found = files.filter((x) => x.path == filepath);
   if (found.length < 1) {
-    throw new Error(`unable to find ${filepath} in ${url.toString()}`);
+    throw new Error(`unable to find ${filepath} in ${sanitizeURL(url)}`);
   }
   return await save(found[0], binary);
 }
