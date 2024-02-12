@@ -92,7 +92,6 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
 async function save(file: FileEntry, install: string) {
   const baseDir = path.dirname(install);
 
-  // FIXME: Add try-catch
   await fsPromises.mkdir(baseDir, { recursive: true });
   await fsPromises.writeFile(install, file.data);
   await fsPromises.chmod(install, 0o755);
