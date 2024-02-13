@@ -9,12 +9,12 @@ import tar from './archive/tar';
 import { HttpOptions } from './index';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
-type FileEntry = {
+export type FileEntry = {
   data: Buffer;
   path: string;
 };
 
-async function downloadAndUnpack(
+export async function downloadAndUnpack(
   url: URL,
   filepath: string,
   binary: string,
@@ -25,7 +25,7 @@ async function downloadAndUnpack(
 
   const found = files.filter((x) => x.path == filepath);
   if (found.length < 1) {
-    throw new Error(`unable to find ${filepath} in ${url.toString()}`);
+    throw new Error(`unable to find ${filepath} in ${sanitizeURL(url)}`);
   }
   return await save(found[0], binary);
 }
@@ -39,7 +39,7 @@ function getHttpsProxyValue(): string | undefined {
   return undefined;
 }
 
-async function download(url: URL, options: HttpOptions) {
+export async function download(url: URL, options: HttpOptions) {
   const opts: AxiosRequestConfig = {
     headers: options.headers,
     responseType: 'arraybuffer',
@@ -48,7 +48,7 @@ async function download(url: URL, options: HttpOptions) {
   const httpsProxy = getHttpsProxyValue();
   if (httpsProxy && url.toString().startsWith('https:')) {
     opts.httpsAgent = new HttpsProxyAgent(httpsProxy);
-    // Disable axios' native proxy, because we are letting HttpsProxyAgent handle it.
+    // Disable axios native proxy. Let HttpsProxyAgent handle it.
     opts.proxy = false;
   }
   return await axios
@@ -57,6 +57,13 @@ async function download(url: URL, options: HttpOptions) {
       return res.data;
     })
     .catch((err) => {
+      if (err.response) {
+        throw new Error(
+          `failed to download from ${sanitizeURL(url)} (${
+            err.response.status
+          }): ${err.response.data}`,
+        );
+      }
       throw new Error(`failed to download: ${err}`);
     });
 }
@@ -85,10 +92,21 @@ async function extract(buf: Buffer): Promise<FileEntry[]> {
 async function save(file: FileEntry, install: string) {
   const baseDir = path.dirname(install);
 
-  // FIXME: Add try-catch
   await fsPromises.mkdir(baseDir, { recursive: true });
   await fsPromises.writeFile(install, file.data);
   await fsPromises.chmod(install, 0o755);
 }
 
-export { downloadAndUnpack, download, FileEntry };
+/**
+ * Sanitize URL for logging by redacting credentials, if present.
+ */
+function sanitizeURL(dirtyURL: URL): string {
+  const url = new URL(dirtyURL.toString());
+
+  if (url.username || url.password) {
+    url.username = '***';
+    url.password = '***';
+  }
+
+  return url.toString();
+}

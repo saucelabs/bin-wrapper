@@ -23,5 +23,3 @@ export async function run(
     child.on('close', (statusCode: number) => resolve(statusCode));
   });
 }
-
-export default { run };

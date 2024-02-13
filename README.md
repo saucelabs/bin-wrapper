@@ -9,7 +9,7 @@
 ## Usage
 
 ```js
-import BinWrapper from '@saucelabs/bin-wrapper';
+import { BinWrapper } from '@saucelabs/bin-wrapper';
 
 const baseUrl = 'http://dummy-host/path/to/archives';
 const bw = new BinWrapper()
