@@ -49,8 +49,11 @@ describe('zip', () => {
       await zip.unpackZip(Buffer.from('non-zip-content'));
       fail();
     } catch (e) {
+      // eslint-disable-next-line jest/no-conditional-expect
       expect(e).toStrictEqual(
-        new Error('Invalid or unsupported zip format. No END header found'),
+        new Error(
+          'ADM-ZIP: Invalid or unsupported zip format. No END header found',
+        ),
       );
     }
   });
