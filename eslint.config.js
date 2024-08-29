@@ -8,11 +8,6 @@ module.exports = ts.config(
   ...ts.configs.recommended,
   prettier,
   {
-    plugins: {
-      jest: jest,
-    },
-  },
-  {
     ignores: ['lib/**'],
   },
   {
@@ -20,6 +15,14 @@ module.exports = ts.config(
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      'no-undef': 'warn',
+    },
+  },
+  {
+    files: ['tests/**/*.*js', 'tests/**/*.*ts'],
+    ...jest.configs['flat/recommended'],
+    rules: {
+      'jest/no-jasmine-globals': 'off',
     },
   },
   {
@@ -30,6 +33,11 @@ module.exports = ts.config(
         exports: true,
         module: true,
         require: true,
+        process: true,
+        Buffer: true,
+        URL: true,
+        NodeJS: true,
+        fail: true,
       },
     },
   },
