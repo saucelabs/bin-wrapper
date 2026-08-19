@@ -11,17 +11,24 @@ on:
 jobs:
   publish-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Update npm to a version that supports Trusted Publishing
+        run: npm install -g npm@latest
 
       - name: Install Dependencies
         run: npm ci
@@ -30,9 +37,6 @@ jobs:
         run: |
           git config --global user.name "devx-sauce-bot"
           git config --global user.email "devx.bot@saucelabs.com"
-
-      - name: Login to NPM
-        run: npm set "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}"
 
       - name: Release
         run: npm run release:ci -- ${{ github.event.inputs.releaseType }}
